@@ -2,28 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RandomFunction : MonoBehaviour
+public class RandomFunction
 {
-    public static bool GetRandFlag(float _percent)
+    /// <summary>
+    /// (_percent) 확률로 성공 여부를 반환하는 함수
+    /// </summary>
+    /// <param name="_percent">0 ~ 1의 float 값</param>
+    /// <returns></returns>
+    public static bool RandomFlag(float _percent)
     {
         return Random.value <= _percent;
     }
 
-    public static int GetRandFlag(params float[] _percents)
+    public static int RandomFlag(params float[] _percents)
     {
-        float[] percents = (float[])_percents.Clone();
+        float[] percent = (float[])_percents.Clone();
         float value = Random.value;
 
-        // 확률 배열을 누적형으로 변경
-        for (int i = 1; i < percents.Length; i++)
-            percents[i] += percents[i - 1];
+        // 구간 작업
+        for (int i = 1; i < percent.Length; i++)
+            percent[i] += percent[i - 1];
+        value *= percent[percent.Length - 1];
 
-        // 랜덤값 범위를 (0, 1)에서 (0, percents)로 확장
-        value *= percents[percents.Length - 1];
-
-        // 랜덤 Index 반환
-        for (int i = 1; i < percents.Length; i++)
-            if (percents[i - 1] <= value && value < percents[i])
+        // 체크
+        for (int i = 1; i < percent.Length; i++)
+            if (percent[i - 1] < value && value <= percent[i])
                 return i;
         return 0;
     }
